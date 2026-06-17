@@ -36,7 +36,8 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 
 	private List<Classifier> pool;
 	private Instances buffer;
-	private LinkedList<Instances> accuracyEstimationWindow;
+	private Instances accuracyEstimationWindow;
+	private boolean instantPrune;
 
 	public MoaStyleDynse(int trainBatchSize) {
 		this(5, 4, 25, trainBatchSize);
@@ -47,6 +48,7 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 		this.maxWindowBatches = maxWindowBatches;
 		this.maxPoolSize = maxPoolSize;
 		this.trainBatchSize = trainBatchSize;
+		this.instantPrune = false;
 		resetLearning();
 	}
 
@@ -54,7 +56,7 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 	public void resetLearningImpl() {
 		this.pool = new ArrayList<Classifier>();
 		this.buffer = null;
-		this.accuracyEstimationWindow = new LinkedList<Instances>();
+		this.accuracyEstimationWindow = new Instances();
 	}
 
 	@Override
@@ -62,7 +64,34 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 		if (buffer == null) {
 			buffer = new Instances(instance.dataset(), 0);
 		}
-		buffer.add(instance);
+
+		// Removes the temporary incomplete classifier from last iteration
+		if(instantPrune) {
+			this.pool.removeLast();
+		}
+
+		if(!(accuracyEstimationWindow.numInstances() == 0)) {
+			if(accuracyEstimationWindow.numInstances() > trainBatchSize) {
+				accuracyEstimationWindow.delete(0);
+			}
+			accuracyEstimationWindow.add(instance);
+			buffer.add(instance);
+
+		} else {
+			accuracyEstimationWindow.add(instance);
+			buffer.add(instance);
+		}
+
+		if(buffer.numInstances() == trainBatchSize) {
+			Classifier newClassifier = TrainClassifier(buffer);
+			pruneByAgeAndAdd(newClassifier);
+			buffer.delete();
+		} else {
+			Classifier newClassifier = TrainClassifier(buffer);
+			this.pool.add(newClassifier);
+			instantPrune = true;
+		}
+
 
 		if (buffer.numInstances() >= trainBatchSize) {
 			Classifier newClassifier = new HoeffdingTree();
@@ -237,4 +266,16 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 	public ImmutableCapabilities defineImmutableCapabilities() {
 		return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
 	}
+
+	private Classifier TrainClassifier(Instances batch) {
+		//TODO quando for implementar isso no padrão MOA HoeffdingTree deve ser o baseClassifier
+		Classifier newClassifier = new HoeffdingTree();
+		newClassifier.prepareForUse();
+		newClassifier.resetLearning();
+		for (int i = 0; i < buffer.numInstances(); i++) {
+			newClassifier.trainOnInstance(buffer.instance(i));
+		}
+		return newClassifier;
+	}
+
 }
