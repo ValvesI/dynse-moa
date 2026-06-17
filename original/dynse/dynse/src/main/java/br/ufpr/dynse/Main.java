@@ -50,23 +50,23 @@ public class Main {
 //				DatasetPaths.GAUSSIAN_TRAIN_CSV, DatasetPaths.GAUSSIAN_TRAIN_CLASS_CSV,
 //				DatasetPaths.GAUSSIAN_TEST_CSV, DatasetPaths.GAUSSIAN_PRIORS);
 //
-		runOptionalTestbed("Original Dynse Checkerboard", new CheckerboardTestbed(), numExecutions,
-				DatasetPaths.CHECKERBOARD_TRAIN_CSV, DatasetPaths.CHECKERBOARD_TRAIN_CLASS_CSV,
-				DatasetPaths.CHECKERBOARD_TEST_CSV, DatasetPaths.CHECKERBOARD_TEST_CLASS_CSV);
-		runOptionalTestbed("MOA-style Dynse Checkerboard", new MoaStyleDynseCheckerboardTestbed(), numExecutions,
-				DatasetPaths.CHECKERBOARD_TRAIN_CSV, DatasetPaths.CHECKERBOARD_TRAIN_CLASS_CSV,
-				DatasetPaths.CHECKERBOARD_TEST_CSV, DatasetPaths.CHECKERBOARD_TEST_CLASS_CSV);
+//		runOptionalTestbed("Original Dynse Checkerboard", new CheckerboardTestbed(), numExecutions,
+//				DatasetPaths.CHECKERBOARD_TRAIN_CSV, DatasetPaths.CHECKERBOARD_TRAIN_CLASS_CSV,
+//				DatasetPaths.CHECKERBOARD_TEST_CSV, DatasetPaths.CHECKERBOARD_TEST_CLASS_CSV);
+//		runOptionalTestbed("MOA-style Dynse Checkerboard", new MoaStyleDynseCheckerboardTestbed(), numExecutions,
+//				DatasetPaths.CHECKERBOARD_TRAIN_CSV, DatasetPaths.CHECKERBOARD_TRAIN_CLASS_CSV,
+//				DatasetPaths.CHECKERBOARD_TEST_CSV, DatasetPaths.CHECKERBOARD_TEST_CLASS_CSV);
 
 //		runOptionalTestbed("Original Dynse Letters", new LettersTestbed(), numExecutions,
 //				DatasetPaths.LETTERS_CSV);
 //		runOptionalTestbed("MOA-style Dynse Letters", new MoaStyleDynseLettersTestbed(), numExecutions,
 //				DatasetPaths.LETTERS_CSV);
 //
-//		runTestbed("Original Dynse STAGGER", new StaggerTestbed(), numExecutions);
-//		runTestbed("MOA-style Dynse STAGGER", new MoaStyleDynseStaggerTestbed(), numExecutions);
-//
-//		runTestbed("Original Dynse SEA", new SeaConceptsTestbed(), numExecutions);
-//		runTestbed("MOA-style Dynse SEA", new MoaStyleDynseSeaTestbed(), numExecutions);
+		runTestbed("Original Dynse STAGGER", new StaggerTestbed(), numExecutions);
+		runTestbed("MOA-style Dynse STAGGER", new MoaStyleDynseStaggerTestbed(), numExecutions);
+
+		runTestbed("Original Dynse SEA", new SeaConceptsTestbed(), numExecutions);
+		runTestbed("MOA-style Dynse SEA", new MoaStyleDynseSeaTestbed(), numExecutions);
 
 		System.out.println("Done!");
     }

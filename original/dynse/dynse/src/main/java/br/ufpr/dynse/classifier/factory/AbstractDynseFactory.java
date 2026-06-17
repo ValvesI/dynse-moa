@@ -33,7 +33,7 @@ import br.ufpr.dynse.pruningengine.IPruningEngine;
 public abstract class AbstractDynseFactory {
 	
 		public static final int DEFAULT_NEIGHBORS_KE = 5;
-		public static final int DEFAULT_SLACK_KE = 2;
+		public static final int DEFAULT_SLACK_KE = 0;
 		public static final int DEFAULT_NEIGHBORS_KU = 5;
 		public static final int DEFAULT_NEIGHBORS_KUW = 5;
 		

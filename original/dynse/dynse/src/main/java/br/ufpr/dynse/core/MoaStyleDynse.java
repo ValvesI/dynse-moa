@@ -38,6 +38,7 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 	private Instances buffer;
 	private Instances accuracyEstimationWindow;
 	private boolean instantPrune;
+	private Classifier temporaryClassifier;
 
 	public MoaStyleDynse(int trainBatchSize) {
 		this(5, 4, 25, trainBatchSize);
@@ -49,6 +50,7 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 		this.maxPoolSize = maxPoolSize;
 		this.trainBatchSize = trainBatchSize;
 		this.instantPrune = false;
+		this.temporaryClassifier = null;
 		resetLearning();
 	}
 
@@ -56,7 +58,7 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 	public void resetLearningImpl() {
 		this.pool = new ArrayList<Classifier>();
 		this.buffer = null;
-		this.accuracyEstimationWindow = new Instances();
+		this.accuracyEstimationWindow = null;
 	}
 
 	@Override
@@ -65,68 +67,66 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 			buffer = new Instances(instance.dataset(), 0);
 		}
 
+		if (accuracyEstimationWindow == null) {
+			accuracyEstimationWindow = new Instances(instance.dataset(), 0);
+		}
+
 		// Removes the temporary incomplete classifier from last iteration
-		if(instantPrune) {
-			this.pool.removeLast();
+		if (instantPrune) {
+			this.pool.remove(temporaryClassifier);
+			instantPrune = false;
 		}
 
-		if(!(accuracyEstimationWindow.numInstances() == 0)) {
-			if(accuracyEstimationWindow.numInstances() > trainBatchSize) {
-				accuracyEstimationWindow.delete(0);
-			}
-			accuracyEstimationWindow.add(instance);
-			buffer.add(instance);
-
-		} else {
-			accuracyEstimationWindow.add(instance);
-			buffer.add(instance);
+		if (accuracyEstimationWindow.numInstances() > maxWindowBatches * trainBatchSize) {
+			accuracyEstimationWindow.delete(0);
 		}
+		accuracyEstimationWindow.add(instance);
+		buffer.add(instance);
 
-		if(buffer.numInstances() == trainBatchSize) {
-			Classifier newClassifier = TrainClassifier(buffer);
+		Classifier newClassifier = TrainClassifier(buffer);
+		if (buffer.numInstances() == trainBatchSize) {
 			pruneByAgeAndAdd(newClassifier);
 			buffer.delete();
 		} else {
-			Classifier newClassifier = TrainClassifier(buffer);
 			this.pool.add(newClassifier);
+			temporaryClassifier = newClassifier;
 			instantPrune = true;
 		}
 
 
-		if (buffer.numInstances() >= trainBatchSize) {
-			Classifier newClassifier = new HoeffdingTree();
-			newClassifier.prepareForUse();
-			newClassifier.resetLearning();
-			for (int i = 0; i < buffer.numInstances(); i++) {
-				newClassifier.trainOnInstance(buffer.instance(i));
-			}
-
-			accuracyEstimationWindow.add(new Instances(buffer));
-			if (accuracyEstimationWindow.size() > maxWindowBatches) {
-				accuracyEstimationWindow.removeFirst();
-			}
-
-			pruneByAgeAndAdd(newClassifier);
-			buffer.delete();
-		}
+//		if (buffer.numInstances() >= trainBatchSize) {
+//			Classifier newClassifier = new HoeffdingTree();
+//			newClassifier.prepareForUse();
+//			newClassifier.resetLearning();
+//			for (int i = 0; i < buffer.numInstances(); i++) {
+//				newClassifier.trainOnInstance(buffer.instance(i));
+//			}
+//
+//			accuracyEstimationWindow.add(new Instances(buffer));
+//			if (accuracyEstimationWindow.size() > maxWindowBatches) {
+//				accuracyEstimationWindow.removeFirst();
+//			}
+//
+//			pruneByAgeAndAdd(newClassifier);
+//			buffer.delete();
+//		}
 	}
 
 	@Override
 	public double[] getVotesForInstance(Instance instance) {
 		if (pool == null || pool.isEmpty() || accuracyEstimationWindow == null
-				|| accuracyEstimationWindow.isEmpty()) {
+				|| accuracyEstimationWindow.numInstances() == 0) {
 			return new double[instance.numClasses()];
 		}
 
-		Instances windowInstances = flattenWindow();
-		if (windowInstances.numInstances() == 0) {
+		if (accuracyEstimationWindow.numInstances() == 0) {
 			return new double[instance.numClasses()];
 		}
 
 		Instances neighbours;
 		try {
-			LinearNNSearch search = new LinearNNSearch(windowInstances);
-			neighbours = search.kNearestNeighbours(instance, Math.min(k, windowInstances.numInstances()));
+			LinearNNSearch search = new LinearNNSearch(accuracyEstimationWindow);
+			neighbours = search.kNearestNeighbours(instance, Math.min(k, accuracyEstimationWindow.numInstances()));
 		} catch (Exception e) {
 			return new double[instance.numClasses()];
 		}
@@ -141,19 +141,19 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 		}
 		pool.add(newClassifier);
 	}
-
-	private Instances flattenWindow() {
-		Instances result = new Instances(accuracyEstimationWindow.getFirst().instance(0).dataset(), 0);
-		for (Instances batch : accuracyEstimationWindow) {
-			for (int i = 0; i < batch.numInstances(); i++) {
-				result.add(batch.instance(i));
-			}
-		}
-		return result;
-	}
+//
+//	private Instances flattenWindow() {
+//		Instances result = new Instances(accuracyEstimationWindow.getFirst().instance(0).dataset(), 0);
+//		for (Instances batch : accuracyEstimationWindow) {
+//			for (int i = 0; i < batch.numInstances(); i++) {
+//				result.add(batch.instance(i));
+//			}
+//		}
+//		return result;
+//	}
 
 	private List<Classifier> selectCompetentClassifiers(Instances neighbours) {
-		int slack = 2;
+		int slack = 0;
 		List<Classifier> competent = new ArrayList<Classifier>();
 
 		while (competent.isEmpty() && slack <= k) {
@@ -180,19 +180,30 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 	}
 
 	private double[] combineVotes(List<Classifier> competent, Instance instance) {
-		double[] combined = new double[instance.numClasses()];
+		double[] votes = new double[instance.numClasses()];
+
+		//TODO fixado pro primeiro para fins de testes e comparações
 		if (competent.isEmpty()) {
-			//combined[ThreadLocalRandom.current().nextInt(combined.length)] = 1.0;
-			combined[0] = 1.0;
-			return combined;
+			votes[0] = 1.0;
+			return votes;
 		}
+
 		for (Classifier classifier : competent) {
-			double[] votes = classifier.getVotesForInstance(instance);
-			if (votes.length > 0) {
-				combined[argMax(votes)]++;
+			double[] probs = classifier.getVotesForInstance(instance);
+			if (probs.length == 0) continue;
+			int maxIndex = argMax(probs);
+			for (int j = 0; j < probs.length; j++) {
+				if (probs[j] == probs[maxIndex]) {
+					votes[j]++;
+				}
 			}
 		}
-		return combined;
+
+		int majorityIndex = argMax(votes);
+
+		double[] result = new double[instance.numClasses()];
+		result[majorityIndex] = 1.0;
+		return result;
 	}
 
 	private int argMax(double[] votes) {
@@ -272,8 +283,8 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 		Classifier newClassifier = new HoeffdingTree();
 		newClassifier.prepareForUse();
 		newClassifier.resetLearning();
-		for (int i = 0; i < buffer.numInstances(); i++) {
-			newClassifier.trainOnInstance(buffer.instance(i));
+		for (int i = 0; i < batch.numInstances(); i++) {
+			newClassifier.trainOnInstance(batch.instance(i));
 		}
 		return newClassifier;
 	}

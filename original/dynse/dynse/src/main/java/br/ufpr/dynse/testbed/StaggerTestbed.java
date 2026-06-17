@@ -86,7 +86,7 @@ public class StaggerTestbed implements MultipleExecutionsTestbed{
 			
 			StreamDynse streamKnoraDriftHandler = dynseFactory.createDefaultDynseKE(StaggerDriftGenerator.NUM_INST_TRAIN_CLASSIFIER_STAGGER);
 			evaluator.learnerOption.setCurrentObject(streamKnoraDriftHandler);
-			
+			System.out.println(random.nextInt());
 			evaluator.streamOption.setCurrentObject(new StaggerDriftGenerator(random.nextInt()));
 			evaluator.trainSizeOption.setValue((StaggerDriftGenerator.NUM_INST_TRAIN_CLASSIFIER_STAGGER + 
 					StaggerDriftGenerator.NUM_INST_TEST_CLASSIFIER_STAGGER)*10*4);
