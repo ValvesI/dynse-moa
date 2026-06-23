@@ -289,4 +289,12 @@ public class MoaStyleDynse extends AbstractClassifier implements MultiClassClass
 		return newClassifier;
 	}
 
+	public int getPoolSize(){
+		return this.pool.size();
+	}
+
+
+
 }
+
+

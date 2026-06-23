@@ -167,7 +167,9 @@ public class StreamDynse extends AbstractDynse<LinkedList<Instance>, IMultipleCl
 		}else{
 			if(super.getNumClassifiersPool() < 1  && super.getTrainInstancesAccumulator().size() < 1 && super.getAccuracyEstimationInstances().size() < 1) {
 				//No classifier trained
-				int majorityIndex = random.nextInt(instance.classAttribute().numValues());
+				//int majorityIndex = random.nextInt(instance.classAttribute().numValues());
+				//TODO retornar para a linha original (acima)
+				int majorityIndex = 0;
 				double[] probs = new double[instance.classAttribute().numValues()];
 				probs[majorityIndex] = 1; // guess randomly
 				return probs;

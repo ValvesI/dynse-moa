@@ -24,7 +24,7 @@ public class MoaStyleDynseStaggerTestbed implements MultipleExecutionsTestbed {
 	@Override
 	public void executeTests(int numExec) throws Exception {
 		List<UFPRLearningCurve> learningCurves = new ArrayList<UFPRLearningCurve>(numExec);
-
+		List<Integer> poolSizes = new ArrayList<Integer>();
 		for (int i = 0; i < numExec; i++) {
 			System.out.println("Executing MOA-style Dynse KE - Exec.: " + i);
 			TaskMonitor monitor = new StandardTaskMonitor();
@@ -46,9 +46,11 @@ public class MoaStyleDynseStaggerTestbed implements MultipleExecutionsTestbed {
 
 			UFPRLearningCurve learningCurve = (UFPRLearningCurve) evaluator.doTask(monitor, null);
 			learningCurves.add(learningCurve);
+			poolSizes.add(dynse.getPoolSize());
 		}
 
 		UFPRLearningCurve avgResult = ufprLearningCurveUtils.averageResults(learningCurves);
 		System.out.println(ufprLearningCurveUtils.strMainStatisticsMatlab(avgResult));
 	}
+
 }

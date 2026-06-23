@@ -50,12 +50,12 @@ public class Main {
 //				DatasetPaths.GAUSSIAN_TRAIN_CSV, DatasetPaths.GAUSSIAN_TRAIN_CLASS_CSV,
 //				DatasetPaths.GAUSSIAN_TEST_CSV, DatasetPaths.GAUSSIAN_PRIORS);
 //
-//		runOptionalTestbed("Original Dynse Checkerboard", new CheckerboardTestbed(), numExecutions,
-//				DatasetPaths.CHECKERBOARD_TRAIN_CSV, DatasetPaths.CHECKERBOARD_TRAIN_CLASS_CSV,
-//				DatasetPaths.CHECKERBOARD_TEST_CSV, DatasetPaths.CHECKERBOARD_TEST_CLASS_CSV);
-//		runOptionalTestbed("MOA-style Dynse Checkerboard", new MoaStyleDynseCheckerboardTestbed(), numExecutions,
-//				DatasetPaths.CHECKERBOARD_TRAIN_CSV, DatasetPaths.CHECKERBOARD_TRAIN_CLASS_CSV,
-//				DatasetPaths.CHECKERBOARD_TEST_CSV, DatasetPaths.CHECKERBOARD_TEST_CLASS_CSV);
+		runOptionalTestbed("Original Dynse Checkerboard", new CheckerboardTestbed(), numExecutions,
+				DatasetPaths.CHECKERBOARD_TRAIN_CSV, DatasetPaths.CHECKERBOARD_TRAIN_CLASS_CSV,
+				DatasetPaths.CHECKERBOARD_TEST_CSV, DatasetPaths.CHECKERBOARD_TEST_CLASS_CSV);
+		runOptionalTestbed("MOA-style Dynse Checkerboard", new MoaStyleDynseCheckerboardTestbed(), numExecutions,
+				DatasetPaths.CHECKERBOARD_TRAIN_CSV, DatasetPaths.CHECKERBOARD_TRAIN_CLASS_CSV,
+				DatasetPaths.CHECKERBOARD_TEST_CSV, DatasetPaths.CHECKERBOARD_TEST_CLASS_CSV);
 
 //		runOptionalTestbed("Original Dynse Letters", new LettersTestbed(), numExecutions,
 //				DatasetPaths.LETTERS_CSV);

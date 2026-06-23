@@ -10,25 +10,25 @@ public final class DatasetPaths {
 	}
 
 	public static final String CHECKERBOARD = path("dynse.dataset.checkerboard",
-			"DYNSE_DATASET_CHECKERBOARD", "C:/datasets/checkerboard_data/CBexponential.arff");
+			"DYNSE_DATASET_CHECKERBOARD", "../../../datasets/checkerboard_data/CBexponential.arff");
 
 	public static final String CHECKERBOARD_TRAIN = path("dynse.dataset.checkerboard.train",
-			"DYNSE_DATASET_CHECKERBOARD_TRAIN", "C:/datasets/checkerboard_data/CBexponentialTrain.arff");
+			"DYNSE_DATASET_CHECKERBOARD_TRAIN", "../../../datasets/checkerboard_data/CBexponentialTrain.arff");
 
 	public static final String CHECKERBOARD_TEST = path("dynse.dataset.checkerboard.test",
-			"DYNSE_DATASET_CHECKERBOARD_TEST", "C:/datasets/checkerboard_data/CBexponentialTest.arff");
+			"DYNSE_DATASET_CHECKERBOARD_TEST", "../../../datasets/checkerboard_data/CBexponentialTest.arff");
 
 	public static final String CHECKERBOARD_TRAIN_CSV = path("dynse.dataset.checkerboard.train.csv",
-			"DYNSE_DATASET_CHECKERBOARD_TRAIN_CSV", "C:/datasets/checkerboard_data/CBexponential_training_data.csv");
+			"DYNSE_DATASET_CHECKERBOARD_TRAIN_CSV", "../../../datasets/checkerboard_data/CBexponential_training_data.csv");
 
 	public static final String CHECKERBOARD_TRAIN_CLASS_CSV = path("dynse.dataset.checkerboard.train.class.csv",
-			"DYNSE_DATASET_CHECKERBOARD_TRAIN_CLASS_CSV", "C:/datasets/checkerboard_data/CBexponential_training_class.csv");
+			"DYNSE_DATASET_CHECKERBOARD_TRAIN_CLASS_CSV", "../../../datasets/checkerboard_data/CBexponential_training_class.csv");
 
 	public static final String CHECKERBOARD_TEST_CSV = path("dynse.dataset.checkerboard.test.csv",
-			"DYNSE_DATASET_CHECKERBOARD_TEST_CSV", "C:/datasets/checkerboard_data/CBexponential_testing_data.csv");
+			"DYNSE_DATASET_CHECKERBOARD_TEST_CSV", "../../../datasets/checkerboard_data/CBexponential_testing_data.csv");
 
 	public static final String CHECKERBOARD_TEST_CLASS_CSV = path("dynse.dataset.checkerboard.test.class.csv",
-			"DYNSE_DATASET_CHECKERBOARD_TEST_CLASS_CSV", "C:/datasets/checkerboard_data/CBexponential_testing_class.csv");
+			"DYNSE_DATASET_CHECKERBOARD_TEST_CLASS_CSV", "../../../datasets/checkerboard_data/CBexponential_testing_class.csv");
 
 	public static final String FOREST_COVERTYPE = path("dynse.dataset.forest",
 			"DYNSE_DATASET_FOREST", "PATH_FOREST_HERE/covtypeNorm_MOA.arff");
